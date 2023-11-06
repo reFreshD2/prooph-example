@@ -1,0 +1,39 @@
+prooph_event_store:
+    stores:
+        default:
+            event_store: 'prooph_event_store.pdo_psql_event_store'
+    projection_managers:
+        projection_managers:
+            event_store: 'prooph_event_store.pdo_psql_event_store'
+            connection: 'prooph_event_store.connection.doctrine_pdo_connection'
+            event_streams_table: event_streams
+            projections_table: projections
+            projections:
+                message:
+                    read_model: '@App\Infrastructure\Message\Projection\MessageReadModel'
+                    projection: '@App\Infrastructure\Message\Projection\MessageProjection'
+
+services:
+    _defaults:
+        public: false
+        autowire: true
+        autoconfigure: true
+
+    Prooph\EventStore\EventStore: '@prooph_event_store.default'
+    Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator: ~
+
+    prooph_event_store.pdo_psql_event_store:
+        class: Prooph\EventStore\Pdo\PostgresEventStore
+        arguments:
+            - '@prooph_event_store.message_factory'
+            - '@prooph_event_store.connection.doctrine_pdo_connection'
+            - '@prooph_event_store.psql.single_stream_strategy'
+
+    prooph_event_store.psql.single_stream_strategy:
+        class: Prooph\EventStore\Pdo\PersistenceStrategy\PostgresSingleStreamStrategy
+
+    prooph_event_store.connection.doctrine_pdo_connection:
+        class: PDO
+        factory: [ '@doctrine.dbal.default_connection', getNativeConnection ]
+
+

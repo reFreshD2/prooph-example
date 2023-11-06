@@ -1,0 +1,9 @@
+send_message:
+    path: /api/message/send
+    controller: App\UI\Http\SendMessageController
+    methods: POST
+
+receive_message:
+    path: /api/message
+    controller: App\UI\Http\ReceiveMessageController
+    methods: GET

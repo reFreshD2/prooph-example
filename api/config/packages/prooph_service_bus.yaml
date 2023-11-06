@@ -1,0 +1,19 @@
+prooph_service_bus:
+    command_buses:
+        default_command_bus: ~
+    event_buses:
+        default_event_bus: ~
+    query_buses:
+        default_query_bus: ~
+
+services:
+    _defaults:
+        public: false
+        autowire: true
+        autoconfigure: true
+
+    Prooph\ServiceBus\CommandBus: '@prooph_service_bus.default_command_bus'
+
+    App\Application\Message\Send\SendMessageCommandHandler:
+        tags:
+            - { name: 'prooph_service_bus.default_command_bus.route_target', message: App\Application\Message\Send\SendMessageCommand }
